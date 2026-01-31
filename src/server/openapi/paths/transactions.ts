@@ -83,7 +83,6 @@ registry.registerPath({
                                 concept: "Venta mostrador",
                                 amount: 120000,
                                 type: "INCOME",
-                                userId: "user_abc123",
                             },
                         },
                         expense: {
@@ -93,7 +92,6 @@ registry.registerPath({
                                 amount: 45000,
                                 date: "2026-01-31T17:00:00.000Z",
                                 type: "EXPENSE",
-                                userId: "user_abc123",
                             },
                         },
                     },

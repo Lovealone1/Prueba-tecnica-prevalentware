@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "@/server/openapi/zod-openapi";
 
 export const UserRoleEnum = z.enum(["ADMIN", "USER"]).openapi("UserRole");
 
