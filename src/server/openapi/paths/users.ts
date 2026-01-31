@@ -85,8 +85,6 @@ registry.registerPath({
     },
 });
 
-
-// PATCH /api/v1/users (name, role)
 registry.registerPath({
     method: "patch",
     path: "/api/v1/users",
@@ -183,7 +181,7 @@ registry.registerPath({
     },
 });
 
-// PATCH /api/v1/users/phone (phone)
+
 registry.registerPath({
     method: "patch",
     path: "/api/v1/users/phone",
