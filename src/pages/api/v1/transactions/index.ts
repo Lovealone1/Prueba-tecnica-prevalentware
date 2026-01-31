@@ -1,10 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "@/server/db/prisma";
 import { CreateTransactionSchema } from "@/server/schemas/transaction.schema";
-
-function jsonError(res: NextApiResponse, status: number, message: string, details?: unknown) {
-    return res.status(status).json({ error: { message, details } });
-}
+import { jsonError } from "@/server/http/json-error";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method === "GET") {
