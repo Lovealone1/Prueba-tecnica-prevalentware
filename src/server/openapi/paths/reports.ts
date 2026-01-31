@@ -122,3 +122,67 @@ registry.registerPath({
         },
     },
 });
+
+registry.registerPath({
+    method: "get",
+    path: "/api/v1/reports/financial-movements.csv",
+    tags: ["Reports"],
+    operationId: "downloadFinancialMovementsCsv",
+    summary: "Download financial movements report (CSV)",
+    description:
+        "Downloads the financial movements report as a CSV file. Admin only.",
+    request: {
+        query: FinancialMovementsQuerySchema,
+    },
+    responses: {
+        200: {
+            description: "CSV file download",
+            content: {
+                "text/csv": {
+                    schema: {
+                        type: "string",
+                        format: "binary",
+                    },
+                },
+            },
+            headers: {
+                "Content-Disposition": {
+                    description: "Attachment filename",
+                    schema: { type: "string" },
+                },
+            },
+        },
+        400: {
+            description: "Invalid query params",
+            content: {
+                "application/json": {
+                    schema: ErrorResponseSchema,
+                },
+            },
+        },
+        401: {
+            description: "Unauthorized",
+            content: {
+                "application/json": {
+                    schema: ErrorResponseSchema,
+                },
+            },
+        },
+        403: {
+            description: "Access denied",
+            content: {
+                "application/json": {
+                    schema: ErrorResponseSchema,
+                },
+            },
+        },
+        500: {
+            description: "Failed to generate CSV report",
+            content: {
+                "application/json": {
+                    schema: ErrorResponseSchema,
+                },
+            },
+        },
+    },
+});

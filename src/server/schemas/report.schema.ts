@@ -6,7 +6,6 @@ export const ReportGranularityEnum = z
 
 export const FinancialMovementsQuerySchema = z
     .object({
-        userId: z.string().min(1),
         from: z.coerce.date().optional(),
         to: z.coerce.date().optional(),
         granularity: ReportGranularityEnum.optional().default("day"),
