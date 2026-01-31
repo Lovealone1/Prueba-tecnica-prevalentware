@@ -8,3 +8,4 @@ export default function handler(
   const spec = generateOpenApiSpec();
   res.status(200).json(spec);
 }
+

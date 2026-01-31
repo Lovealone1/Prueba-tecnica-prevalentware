@@ -1,3 +1,4 @@
+import "./paths"
 import { OpenApiGeneratorV3 } from "@asteasolutions/zod-to-openapi";
 import { registry } from "./registry";
 
