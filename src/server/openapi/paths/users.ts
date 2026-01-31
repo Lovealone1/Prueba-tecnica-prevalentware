@@ -10,6 +10,82 @@ import { ErrorResponseSchema } from "@/server/schemas/error.schema";
 
 const UsersTag = ["Users"];
 
+registry.registerPath({
+    method: "get",
+    path: "/api/v1/users",
+    tags: UsersTag,
+    operationId: "getUsers",
+    summary: "Get users",
+    description:
+        "Returns users. If `userId` is provided, returns a single user. Otherwise returns a list ordered by creation date (desc).",
+    request: {
+        query: z.object({
+            userId: z.string().min(1).optional(),
+        }),
+    },
+    responses: {
+        200: {
+            description: "OK — Users fetched successfully.",
+            content: {
+                "application/json": {
+                    schema: z.union([UserSchema, z.array(UserSchema)]),
+                    examples: {
+                        list: {
+                            summary: "List users",
+                            value: [
+                                {
+                                    id: "user_abc123",
+                                    name: "Daniel Garcia",
+                                    email: "dgo342@hotmail.com",
+                                    role: "ADMIN",
+                                    phone: null,
+                                    createdAt: "2026-01-01T10:00:00.000Z",
+                                    updatedAt: "2026-01-31T17:40:00.000Z",
+                                },
+                            ],
+                        },
+                        single: {
+                            summary: "Single user by userId",
+                            value: {
+                                id: "user_abc123",
+                                name: "Daniel Garcia",
+                                email: "dgo342@hotmail.com",
+                                role: "ADMIN",
+                                phone: null,
+                                createdAt: "2026-01-01T10:00:00.000Z",
+                                updatedAt: "2026-01-31T17:40:00.000Z",
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        404: {
+            description: "Not Found — User not found (when userId is provided).",
+            content: {
+                "application/json": {
+                    schema: ErrorResponseSchema,
+                    examples: {
+                        notFound: { value: { error: { message: "User not found" } } },
+                    },
+                },
+            },
+        },
+        500: {
+            description: "Internal Server Error — Failed to fetch users.",
+            content: {
+                "application/json": {
+                    schema: ErrorResponseSchema,
+                    examples: {
+                        error: { value: { error: { message: "Failed to fetch users" } } },
+                    },
+                },
+            },
+        },
+    },
+});
+
+
 // PATCH /api/v1/users (name, role)
 registry.registerPath({
     method: "patch",
