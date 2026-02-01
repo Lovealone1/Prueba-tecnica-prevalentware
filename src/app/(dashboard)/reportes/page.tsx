@@ -1,4 +1,8 @@
+import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import { cookies } from "next/headers";
+import { auth } from "@/server/auth/auth";
+
 import { ReportFilters } from "@/components/reports/ReportFilters";
 import { FinancialBalanceCard } from "@/components/reports/FinancialBalanceCard";
 import { FinancialMovementsChart } from "@/components/reports/FinancialMovementChart";
@@ -22,12 +26,17 @@ async function getCookieHeader() {
 }
 
 async function fetchJSON(url: string, cookieHeader: string) {
-    const res = await fetch(url, { headers: { cookie: cookieHeader }, cache: "no-store" });
+    const res = await fetch(url, {
+        headers: { cookie: cookieHeader },
+        cache: "no-store",
+    });
+
     if (!res.ok) {
         const text = await res.text().catch(() => "");
         console.error("Fetch failed:", res.status, url, text);
         return null;
     }
+
     return res.json();
 }
 
@@ -36,6 +45,21 @@ export default async function ReportesPage({
 }: {
     searchParams?: Promise<{ from?: string; to?: string; granularity?: string }>;
 }) {
+
+    const session = await auth.api.getSession({
+        headers: (await headers()) as any,
+    });
+
+    if (!session?.user?.id) {
+        redirect("/login");
+    }
+
+    const role = (session.user as any).role as "ADMIN" | "USER" | undefined;
+
+    if (role !== "ADMIN") {
+        redirect("/transacciones");
+    }
+
     const sp = (await searchParams) ?? {};
 
     const now = new Date();
@@ -62,7 +86,9 @@ export default async function ReportesPage({
         fetchJSON(balanceUrl.toString(), cookieHeader),
     ]);
 
-    if (!chartData || !balanceData) return null;
+    if (!chartData || !balanceData) {
+        redirect("/transacciones");
+    }
 
     return (
         <div className="px-6 py-6 space-y-4">

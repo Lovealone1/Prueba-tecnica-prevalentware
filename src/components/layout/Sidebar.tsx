@@ -6,13 +6,25 @@ import { usePathname } from "next/navigation";
 import { useMemo, useState } from "react";
 import { navSections } from "@/config/navigation";
 import { MaterialIcon } from "@/components/ui/MaterialIcon";
+import { useAuth } from "@/components/auth/AuthProvider";
+import { filterNavByRole } from "@/config/nav-guard";
 
 export function Sidebar() {
     const pathname = usePathname();
     const [collapsed, setCollapsed] = useState(false);
 
+    const { me, loading } = useAuth();
+
     const widthClass = collapsed ? "w-16" : "w-72";
-    const items = useMemo(() => navSections.flatMap((s) => s.items), []);
+
+    const items = useMemo(() => {
+        if (!me) return [];
+        const sections = filterNavByRole(navSections, me.role);
+        return sections.flatMap((s) => s.items);
+    }, [me]);
+
+    if (loading) return null;
+    if (!me) return null;
 
     return (
         <aside
@@ -28,7 +40,7 @@ export function Sidebar() {
                     className={[
                         "group flex items-center rounded-md border border-zinc-800/60 bg-zinc-950/40 transition hover:bg-white/5",
                         collapsed
-                            ? "mx-auto h-10 w-10 justify-center p-0" 
+                            ? "mx-auto h-10 w-10 justify-center p-0"
                             : "w-full justify-between px-3 py-3",
                     ].join(" ")}
                     title={collapsed ? "Expandir" : "Colapsar"}
@@ -40,7 +52,11 @@ export function Sidebar() {
                         ].join(" ")}
                     >
                         <Image
-                            src={collapsed ? "/prevalentware_logo.png" : "/logo-prevalentware.png"}
+                            src={
+                                collapsed
+                                    ? "/prevalentware_logo.png"
+                                    : "/logo-prevalentware.png"
+                            }
                             alt="PrevalentWare"
                             width={collapsed ? 24 : 200}
                             height={collapsed ? 24 : 60}
@@ -92,7 +108,9 @@ export function Sidebar() {
                                         size={20}
                                         className={[
                                             "transition",
-                                            active ? "text-blue-200" : "text-zinc-300 group-hover:text-white",
+                                            active
+                                                ? "text-blue-200"
+                                                : "text-zinc-300 group-hover:text-white",
                                         ].join(" ")}
                                     />
                                 )}

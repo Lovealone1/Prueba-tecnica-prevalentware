@@ -11,7 +11,7 @@ async function getCookieHeader() {
 
 async function getTransactions(cookieHeader: string): Promise<TransactionRow[]> {
     const baseUrl = process.env.BETTER_AUTH_URL ?? "http://localhost:3000";
-    const res = await fetch(`${baseUrl}/api/v1/transactions`, {
+    const res = await fetch(`${baseUrl}/api/v1/transactions`, { 
         headers: { cookie: cookieHeader },
         cache: "no-store",
     });
