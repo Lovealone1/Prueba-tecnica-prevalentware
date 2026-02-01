@@ -23,7 +23,7 @@ export const CreateTransactionSchema = z
         amount: z.number().positive(),
         date: z.coerce.date().optional(),
         type: TransactionTypeEnum,
-        userId: z.string(),
+        userId: z.string().optional(),
     })
     .openapi("CreateTransaction");
 
