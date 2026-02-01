@@ -1,9 +1,16 @@
 import { z } from "@/server/openapi/zod-openapi";
 
+/**
+ * Report granularity options for time-series aggregation.
+ */
 export const ReportGranularityEnum = z
   .enum(["day", "month", "all"])
   .openapi("ReportGranularity");
 
+/**
+ * Query parameters for financial movements report endpoint.
+ * All parameters are optional with sensible defaults.
+ */
 export const FinancialMovementsQuerySchema = z
   .object({
     from: z.coerce.date().optional(),
@@ -12,15 +19,21 @@ export const FinancialMovementsQuerySchema = z
   })
   .openapi("FinancialMovementsQuery");
 
+/**
+ * Single data point in a time-series financial report.
+ */
 export const FinancialMovementPointSchema = z
   .object({
-    period: z.string(), // YYYY-MM-DD | YYYY-MM | "all"
+    period: z.string(),
     income: z.number(),
     expense: z.number(),
     net: z.number(),
   })
   .openapi("FinancialMovementPoint");
 
+/**
+ * Complete financial movements report with aggregated transaction data.
+ */
 export const FinancialMovementsReportSchema = z
   .object({
     balance: z.number(),
@@ -32,12 +45,19 @@ export const FinancialMovementsReportSchema = z
   })
   .openapi("FinancialMovementsReport");
 
+/**
+ * Single dataset for chart visualization.
+ * Contains aggregated values for a single metric (income, expense, or net).
+ */
 export const FinancialMovementsChartDatasetSchema = z.object({
   key: z.enum(["income", "expense", "net"]),
   label: z.string(),
   data: z.array(z.number()),
 });
 
+/**
+ * Data point representation for chart points.
+ */
 export const FinancialMovementsChartPointSchema = z.object({
   label: z.string(),
   income: z.number(),
@@ -45,6 +65,10 @@ export const FinancialMovementsChartPointSchema = z.object({
   net: z.number(),
 });
 
+/**
+ * Complete response structure for financial movements chart.
+ * Provides multiple data formats for different visualization needs.
+ */
 export const FinancialMovementsChartResponseSchema = z.object({
   meta: z.object({
     from: z.string(),
@@ -66,6 +90,10 @@ export const FinancialMovementsChartResponseSchema = z.object({
   datasets: z.array(FinancialMovementsChartDatasetSchema),
 });
 
+/**
+ * Financial balance response structure.
+ * Aggregated summary of all transactions with current balance.
+ */
 export const FinancialBalanceResponseSchema = z.object({
   balance: z.number(),
   currency: z.string(),

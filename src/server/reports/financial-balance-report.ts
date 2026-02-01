@@ -1,17 +1,32 @@
 import { prisma } from "@/server/db/prisma";
 
+/**
+ * Response structure for financial balance report.
+ * Provides current balance and aggregated income/expense totals.
+ */
 export type FinancialBalanceResponse = {
     balance: number;
-    currency: string; // si manejas multi-moneda, esto cambia
-    asOf: string; // ISO
+    currency: string;
+    asOf: string;
     totals: {
         income: number;
         expense: number;
     };
 };
 
+/**
+ * Builds a financial balance report aggregating all transactions.
+ * 
+ * Calculates:
+ * - Total income from all INCOME transactions
+ * - Total expense from all EXPENSE transactions
+ * - Net balance (income - expense)
+ * - Report timestamp
+ * 
+ * @returns Financial balance data with currency and timestamp
+ */
 export async function buildFinancialBalanceReport(): Promise<FinancialBalanceResponse> {
-    // Ajusta el modelo/tabla si no es "transaction"
+    // Aggregate transactions by type to calculate totals
     const grouped = await prisma.transaction.groupBy({
         by: ["type"],
         _sum: { amount: true },
