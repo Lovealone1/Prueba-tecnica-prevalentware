@@ -10,9 +10,17 @@ export type ColumnDef<T> = {
     render: (row: T) => React.ReactNode;
 };
 
+type FooterCtx<T> = {
+    pageRows: T[];
+    page: number;
+    totalPages: number;
+    totalRows: number;
+    pageSize: number;
+};
+
 type DataTableProps<T> = {
     title?: string;
-    headerRight?: React.ReactNode; // ✅ slot opcional para botón/acciones
+    headerRight?: React.ReactNode;
     columns: ColumnDef<T>[];
     rows: T[];
     getRowKey: (row: T) => string;
@@ -20,6 +28,9 @@ type DataTableProps<T> = {
     pageSize?: number;
     showPagination?: boolean;
     emptyText?: string;
+
+    // ✅ nuevo: footer slot para cosas como "Total"
+    footerRight?: (ctx: FooterCtx<T>) => React.ReactNode;
 };
 
 export function DataTable<T>({
@@ -31,6 +42,7 @@ export function DataTable<T>({
     pageSize = 10,
     showPagination = true,
     emptyText = "Sin datos",
+    footerRight,
 }: DataTableProps<T>) {
     const [page, setPage] = useState(1);
 
@@ -51,9 +63,16 @@ export function DataTable<T>({
     const btnBase =
         "flex h-8 w-8 items-center justify-center rounded-md border border-zinc-800/70 bg-white/5 text-zinc-200 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50";
 
+    const footerCtx: FooterCtx<T> = {
+        pageRows,
+        page: safePage,
+        totalPages,
+        totalRows: rows.length,
+        pageSize,
+    };
+
     return (
         <section className="relative overflow-hidden rounded-3xl border border-zinc-800/70 bg-zinc-950/55 shadow-[0_30px_80px_rgba(0,0,0,0.65)] backdrop-blur-xl">
-            {/* subtle internal glow */}
             <div className="pointer-events-none absolute inset-0">
                 <div className="absolute -right-24 -top-24 h-72 w-72 rounded-full bg-blue-600/15 blur-[90px]" />
                 <div className="absolute -left-24 -bottom-24 h-72 w-72 rounded-full bg-sky-500/10 blur-[90px]" />
@@ -64,8 +83,6 @@ export function DataTable<T>({
                 {title ? (
                     <div className="flex items-center justify-between border-b border-white/5 px-5 py-4">
                         <h3 className="text-base font-bold uppercase text-white">{title}</h3>
-
-                        {/* ✅ acciones opcionales del padre */}
                         <div className="flex items-center gap-2">{headerRight}</div>
                     </div>
                 ) : (
@@ -111,10 +128,7 @@ export function DataTable<T>({
                                         {columns.map((col) => (
                                             <td
                                                 key={col.key}
-                                                className={[
-                                                    "px-5 py-3 align-middle",
-                                                    alignClass(col.align),
-                                                ].join(" ")}
+                                                className={["px-5 py-3 align-middle", alignClass(col.align)].join(" ")}
                                             >
                                                 {col.render(row)}
                                             </td>
@@ -141,50 +155,55 @@ export function DataTable<T>({
                             </span>
                         </div>
 
-                        <div className="flex items-center gap-2">
-                            <button
-                                type="button"
-                                onClick={() => setPage(1)}
-                                disabled={safePage === 1}
-                                className={btnBase}
-                                aria-label="Primera página"
-                                title="Primera"
-                            >
-                                ⟪
-                            </button>
+                        <div className="flex items-center gap-3">
+                            {/* ✅ slot del padre (ej: Total visible) */}
+                            {footerRight ? <div>{footerRight(footerCtx)}</div> : null}
 
-                            <button
-                                type="button"
-                                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                                disabled={safePage === 1}
-                                className={btnBase}
-                                aria-label="Página anterior"
-                                title="Anterior"
-                            >
-                                ⟨
-                            </button>
+                            <div className="flex items-center gap-2">
+                                <button
+                                    type="button"
+                                    onClick={() => setPage(1)}
+                                    disabled={safePage === 1}
+                                    className={btnBase}
+                                    aria-label="Primera página"
+                                    title="Primera"
+                                >
+                                    ⟪
+                                </button>
 
-                            <button
-                                type="button"
-                                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                                disabled={safePage === totalPages}
-                                className={btnBase}
-                                aria-label="Página siguiente"
-                                title="Siguiente"
-                            >
-                                ⟩
-                            </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                                    disabled={safePage === 1}
+                                    className={btnBase}
+                                    aria-label="Página anterior"
+                                    title="Anterior"
+                                >
+                                    ⟨
+                                </button>
 
-                            <button
-                                type="button"
-                                onClick={() => setPage(totalPages)}
-                                disabled={safePage === totalPages}
-                                className={btnBase}
-                                aria-label="Última página"
-                                title="Última"
-                            >
-                                ⟫
-                            </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                                    disabled={safePage === totalPages}
+                                    className={btnBase}
+                                    aria-label="Página siguiente"
+                                    title="Siguiente"
+                                >
+                                    ⟩
+                                </button>
+
+                                <button
+                                    type="button"
+                                    onClick={() => setPage(totalPages)}
+                                    disabled={safePage === totalPages}
+                                    className={btnBase}
+                                    aria-label="Última página"
+                                    title="Última"
+                                >
+                                    ⟫
+                                </button>
+                            </div>
                         </div>
                     </div>
                 ) : null}

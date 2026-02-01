@@ -6,7 +6,7 @@ export const navSections: NavSection[] = [
         items: [
             {
                 name: "Ingresos y egresos",
-                href: "/",
+                href: "/transacciones",
                 iconName: "payments",
                 iconSet: "rounded",
             },
