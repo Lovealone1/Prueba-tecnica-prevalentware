@@ -24,10 +24,14 @@ function SkeletonLine({ w = "w-28" }: { w?: string }) {
 
 export function UsersTable({
     rows,
+    onEdit,
+    onPhone,
     loading = false,
     pageSize = 10,
 }: {
     rows: UserRow[];
+    onEdit?: (u: UserRow) => void;
+    onPhone?: (u: UserRow) => void;
     loading?: boolean;
     pageSize?: number;
 }) {
@@ -81,7 +85,7 @@ export function UsersTable({
                 header: "",
                 align: "right",
                 widthClassName: "w-28",
-                render: () =>
+                render: (u) =>
                     loading ? (
                         <div className="flex justify-end gap-2">
                             <div className="h-8 w-8 animate-pulse rounded-md bg-white/10" />
@@ -92,13 +96,11 @@ export function UsersTable({
                             <button
                                 type="button"
                                 title="Editar usuario"
+                                onClick={() => onEdit?.(u)}
                                 className="
-                  flex h-8 w-8 items-center justify-center
-                  rounded-md
-                  bg-blue-500/15 text-blue-300
-                  ring-1 ring-blue-500/30
-                  transition
-                  hover:bg-blue-500/25 hover:text-blue-200
+                  flex h-8 w-8 items-center justify-center rounded-md
+                  bg-blue-500/15 text-blue-300 ring-1 ring-blue-500/30
+                  transition hover:bg-blue-500/25 hover:text-blue-200
                 "
                             >
                                 <MaterialIcon name="edit" set="rounded" size={18} />
@@ -106,14 +108,12 @@ export function UsersTable({
 
                             <button
                                 type="button"
-                                title="Agregar teléfono"
+                                title="Editar teléfono"
+                                onClick={() => onPhone?.(u)}
                                 className="
-                  flex h-8 w-8 items-center justify-center
-                  rounded-md
-                  bg-blue-500/15 text-blue-300
-                  ring-1 ring-blue-500/30
-                  transition
-                  hover:bg-blue-500/25 hover:text-blue-200
+                  flex h-8 w-8 items-center justify-center rounded-md
+                  bg-blue-500/15 text-blue-300 ring-1 ring-blue-500/30
+                  transition hover:bg-blue-500/25 hover:text-blue-200
                 "
                             >
                                 <MaterialIcon name="phone" set="rounded" size={18} />
@@ -122,7 +122,7 @@ export function UsersTable({
                     ),
             },
         ],
-        [loading]
+        [loading, onEdit, onPhone]
     );
 
     return (
