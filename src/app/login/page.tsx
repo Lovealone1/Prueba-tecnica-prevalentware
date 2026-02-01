@@ -7,7 +7,7 @@ export default function LoginPage() {
     const loginWithGithub = async () => {
         await authClient.signIn.social({
             provider: "github",
-            callbackURL: "/",      // luego lo usas como landing post-login
+            callbackURL: "/",     
             errorCallbackURL: "/login",
         });
     };
@@ -98,13 +98,10 @@ export default function LoginPage() {
     );
 }
 
-/**
- * Card oscuro tipo "glow" (como la referencia).
- */
+
 function GlowCard({ children }: { children: React.ReactNode }) {
     return (
         <section className="relative overflow-hidden rounded-3xl border border-zinc-800/70 bg-zinc-950/55 p-7 shadow-[0_30px_80px_rgba(0,0,0,0.65)] backdrop-blur-xl">
-            {/* Destellos internos */}
             <div className="pointer-events-none absolute inset-0">
                 <div className="absolute -right-24 -top-24 h-72 w-72 rounded-full bg-blue-600/25 blur-[80px]" />
                 <div className="absolute -left-28 -bottom-28 h-80 w-80 rounded-full bg-sky-500/15 blur-[90px]" />
