@@ -7,8 +7,9 @@ on:
     branches: [master]
 
 jobs:
-  test:
+  ci:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
@@ -17,13 +18,22 @@ jobs:
           node-version: 20
           cache: npm
 
-      - name: Install dependencies
+      - name: Install
         run: npm ci
 
-      - name: Generate Prisma Client
+      - name: Prisma generate
         env:
-          DATABASE_URL: postgresql://user:pass@localhost:5432/db?schema=public
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: npx prisma generate
 
       - name: Unit tests (coverage)
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: npx vitest run --coverage
+
+      - name: Build
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
+          BETTER_AUTH_URL: ${{ secrets.BETTER_AUTH_URL }}
+        run: npm run build
