@@ -6,7 +6,7 @@ import {
     TransactionListResponseSchema,
 } from "@/server/schemas/transaction.schema";
 
-import { ErrorResponseSchema } from "@/server/schemas/error.schema"; 
+import { ErrorResponseSchema } from "@/server/schemas/error.schema";
 
 const TransactionsTag = ["Transactions"];
 
@@ -154,6 +154,58 @@ registry.registerPath({
                     examples: {
                         error: { value: { error: { message: "Failed to create transaction" } } },
                     },
+                },
+            },
+        },
+    },
+});
+
+registry.registerPath({
+    method: "delete",
+    path: "/api/v1/transactions",
+    tags: TransactionsTag,
+    operationId: "deleteTransaction",
+    summary: "Delete transaction",
+    description:
+        "Deletes a transaction by id. USER can only delete their own transactions. ADMIN can delete any.",
+    request: {
+        query: z.object({
+            id: z.string().min(1),
+        }),
+    },
+    responses: {
+        204: {
+            description: "No Content — Transaction deleted successfully.",
+        },
+        400: {
+            description: "Bad Request — Missing or invalid transaction id.",
+            content: {
+                "application/json": {
+                    schema: ErrorResponseSchema,
+                },
+            },
+        },
+        403: {
+            description: "Forbidden — Access denied.",
+            content: {
+                "application/json": {
+                    schema: ErrorResponseSchema,
+                },
+            },
+        },
+        404: {
+            description: "Not Found — Transaction not found.",
+            content: {
+                "application/json": {
+                    schema: ErrorResponseSchema,
+                },
+            },
+        },
+        500: {
+            description: "Internal Server Error — Failed to delete transaction.",
+            content: {
+                "application/json": {
+                    schema: ErrorResponseSchema,
                 },
             },
         },

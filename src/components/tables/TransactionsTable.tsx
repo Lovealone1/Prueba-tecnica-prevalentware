@@ -3,7 +3,7 @@
  * @description Table component for displaying transaction list (income and expenses).
  * Renders information with special formatting for COP currency and dates.
  * Supports pagination and loading state with skeleton loaders.
- * 
+ *
  * @typedef {Object} TransactionRow
  * @property {string} id - Unique transaction ID
  * @property {string} concept - Movement description
@@ -11,44 +11,41 @@
  * @property {string} date - ISO format movement date
  * @property {'gasto'|'ingreso'} type - Movement type
  * @property {string} name - Name of responsible user
- * 
+ *
  * @param {Object} props
  * @param {TransactionRow[]} props.rows - Transaction data
  * @param {React.ReactNode} [props.headerRight] - Element to show in header right
+ * @param {Function} [props.onDelete] - Callback when delete button clicked
  * @param {boolean} [props.loading=false] - Whether loading
- * @param {number} [props.pageSize=12] - Items per page
- * 
+ * @param {number} [props.pageSize=10] - Items per page
+ *
  * @example
  * <TransactionsTable
  *   rows={transactions}
  *   loading={isLoading}
  *   headerRight={<NewTransactionButton />}
+ *   onDelete={(tx) => handleDelete(tx)}
  * />
  */
 "use client";
 
 import { useMemo } from "react";
 import { DataTable, type ColumnDef } from "@/components/ui/DataTable";
+import { MaterialIcon } from "@/components/ui/MaterialIcon";
 
 export type TransactionRow = {
     id: string;
     concept: string;
     amount: number;
-    date: string; // ISO
+    date: string;
     type: "gasto" | "ingreso";
     name: string;
 };
 
-/**
- * Format ISO date to dd/mm/yyyy HH:mm:ss format
- */
 function formatDate(value: string) {
     return value.slice(0, 19).replace("T", " ");
 }
 
-/**
- * Format number to COP currency
- */
 function formatMoneyCop(value: number) {
     return new Intl.NumberFormat("es-CO", {
         style: "currency",
@@ -57,9 +54,6 @@ function formatMoneyCop(value: number) {
     }).format(value);
 }
 
-/**
- * Skeleton line component for loading state
- */
 function SkeletonLine({ w = "w-28" }: { w?: string }) {
     return <div className={`h-4 ${w} animate-pulse rounded bg-white/10`} />;
 }
@@ -67,11 +61,13 @@ function SkeletonLine({ w = "w-28" }: { w?: string }) {
 export function TransactionsTable({
     rows,
     headerRight,
+    onDelete,
     loading = false,
-    pageSize = 12,
+    pageSize = 10,
 }: {
     rows: TransactionRow[];
     headerRight?: React.ReactNode;
+    onDelete?: (t: TransactionRow) => void;
     loading?: boolean;
     pageSize?: number;
 }) {
@@ -113,9 +109,7 @@ export function TransactionsTable({
                             <SkeletonLine w="w-24" />
                         </div>
                     ) : (
-                        <span className="text-zinc-200">
-                            {formatMoneyCop(t.amount)}
-                        </span>
+                        <span className="text-zinc-200">{formatMoneyCop(t.amount)}</span>
                     ),
             },
             {
@@ -128,11 +122,37 @@ export function TransactionsTable({
                 key: "name",
                 header: "Usuario",
                 widthClassName: "w-56",
+                render: (t) => (loading ? <SkeletonLine w="w-40" /> : t.name?.trim() || "—"),
+            },
+            {
+                key: "actions",
+                header: "",
+                align: "right",
+                widthClassName: "w-20",
                 render: (t) =>
-                    loading ? <SkeletonLine w="w-40" /> : t.name?.trim() || "—",
+                    loading ? (
+                        <div className="flex justify-end">
+                            <div className="h-8 w-8 animate-pulse rounded-md bg-white/10" />
+                        </div>
+                    ) : (
+                        <div className="flex justify-end">
+                            <button
+                                type="button"
+                                title="Eliminar transacción"
+                                onClick={() => onDelete?.(t)}
+                                className="
+                  flex h-8 w-8 items-center justify-center rounded-md
+                  bg-rose-500/15 text-rose-300 ring-1 ring-rose-500/30
+                  transition hover:bg-rose-500/25 hover:text-rose-200
+                "
+                            >
+                                <MaterialIcon name="delete" set="rounded" size={18} />
+                            </button>
+                        </div>
+                    ),
             },
         ],
-        [loading]
+        [loading, onDelete]
     );
 
     return (
@@ -146,7 +166,6 @@ export function TransactionsTable({
             emptyText={loading ? "" : "Sin transacciones"}
             showPagination={!loading}
             footerRight={({ pageRows }) => {
-                // Total de lo visible (neto): ingreso suma, gasto resta
                 const total = pageRows.reduce((acc, t) => {
                     const signed = t.type === "ingreso" ? t.amount : -t.amount;
                     return acc + signed;
@@ -161,5 +180,4 @@ export function TransactionsTable({
             }}
         />
     );
-
 }

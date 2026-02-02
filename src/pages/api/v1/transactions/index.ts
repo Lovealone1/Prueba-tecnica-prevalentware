@@ -40,7 +40,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     type: true,
                     createdAt: true,
                     updatedAt: true,
-                    user: { select: { name: true } }, // <- join para traer name
+                    user: { select: { name: true } },
                 },
             });
 
@@ -51,7 +51,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     amount: Number(t.amount),
                     date: t.date.toISOString(),
                     type: translateType(t.type),
-                    name: t.user?.name ?? "", // <- en vez de userId
+                    name: t.user?.name ?? "",
                     createdAt: t.createdAt.toISOString(),
                     updatedAt: t.updatedAt.toISOString(),
                 }))
@@ -105,7 +105,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     type: true,
                     createdAt: true,
                     updatedAt: true,
-                    user: { select: { name: true } }, // <- para devolver name
+                    user: { select: { name: true } },
                 },
             });
 
@@ -124,6 +124,45 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }
     }
 
-    res.setHeader("Allow", "GET, POST");
+    if (req.method === "DELETE") {
+        const id = typeof req.query.id === "string" ? req.query.id : undefined;
+        if (!id) {
+            return jsonError(res, 400, "Missing transaction id");
+        }
+
+        try {
+            if (authUser.role === "USER") {
+                const deleted = await prisma.transaction.deleteMany({
+                    where: {
+                        id,
+                        userId: authUser.id,
+                    },
+                });
+
+                if (deleted.count === 0) {
+                    return jsonError(res, 403, ERROR_MESSAGES.ACCESS_DENIED);
+                }
+
+                return res.status(204).end();
+            }
+
+            const existing = await prisma.transaction.findUnique({
+                where: { id },
+                select: { id: true },
+            });
+
+            if (!existing) {
+                return jsonError(res, 404, "Transaction not found");
+            }
+
+            await prisma.transaction.delete({ where: { id } });
+
+            return res.status(204).end();
+        } catch {
+            return jsonError(res, 500, "Failed to delete transaction");
+        }
+    }
+
+    res.setHeader("Allow", "GET, POST, DELETE");
     return res.status(405).end();
 }
