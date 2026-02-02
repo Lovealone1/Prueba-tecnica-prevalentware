@@ -13,6 +13,7 @@ import { Toaster } from "sonner";
 export function AlertsProvider() {
     return (
         <Toaster
+            theme="dark"
             position="top-right"
             richColors
             closeButton
