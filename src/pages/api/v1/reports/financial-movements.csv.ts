@@ -38,7 +38,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         res.setHeader("Content-Disposition", `attachment; filename="${fileName}"`);
 
         return res.status(200).send(csv);
-    } catch {
+    } catch (error) {
+        // Handle date range validation errors
+        if (error instanceof Error && error.message.includes("Invalid date range")) {
+            return jsonError(res, 400, error.message);
+        }
         return jsonError(res, 500, "Failed to generate CSV report");
     }
 }

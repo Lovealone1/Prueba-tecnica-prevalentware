@@ -20,7 +20,7 @@ export function Breadcrumbs() {
     const parts = (pathname || "/").split("?")[0].split("#")[0].split("/").filter(Boolean);
 
     const crumbs = [
-        { href: "/", label: "Dashboard" },
+        { href: "/", label: "Prevalentware" },
         ...parts.map((seg, idx) => {
             const href = "/" + parts.slice(0, idx + 1).join("/");
             return { href, label: titleFromSegment(seg) };

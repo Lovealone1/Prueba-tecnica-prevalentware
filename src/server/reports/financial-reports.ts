@@ -18,6 +18,11 @@ export async function buildFinancialMovementsReport(params: {
 }) {
     const { from, to, granularity } = params;
 
+    // Validate date range if both dates are provided
+    if (from && to && from.getTime() > to.getTime()) {
+        throw new Error("Invalid date range: 'from' date must be before or equal to 'to' date");
+    }
+
     const txs = await prisma.transaction.findMany({
         where: {
             ...(from || to

@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { useMemo, useState } from "react";
 import { navSections } from "@/config/navigation";
 import { MaterialIcon } from "@/components/ui/MaterialIcon";
-import { useAuth } from "@/components/auth/AuthProvider";
+import { useAuth } from "@/components/providers/AuthProvider";
 import { filterNavByRole } from "@/config/nav-guard";
 
 export function Sidebar() {

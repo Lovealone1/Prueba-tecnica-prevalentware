@@ -10,6 +10,7 @@ export const ReportGranularityEnum = z
 /**
  * Query parameters for financial movements report endpoint.
  * All parameters are optional with sensible defaults.
+ * Validates that if both dates are provided, from <= to.
  */
 export const FinancialMovementsQuerySchema = z
   .object({
@@ -17,6 +18,19 @@ export const FinancialMovementsQuerySchema = z
     to: z.coerce.date().optional(),
     granularity: ReportGranularityEnum.optional().default("day"),
   })
+  .refine(
+    (data) => {
+      // If both dates are provided, validate that from <= to
+      if (data.from && data.to) {
+        return data.from.getTime() <= data.to.getTime();
+      }
+      return true;
+    },
+    {
+      message: "Invalid date range: 'from' date must be before or equal to 'to' date",
+      path: ["from"],
+    }
+  )
   .openapi("FinancialMovementsQuery");
 
 /**

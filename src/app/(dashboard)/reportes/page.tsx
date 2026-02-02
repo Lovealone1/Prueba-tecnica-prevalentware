@@ -1,5 +1,4 @@
 import { redirect } from "next/navigation";
-import { headers } from "next/headers";
 import { cookies } from "next/headers";
 import { auth } from "@/server/auth/auth";
 
@@ -40,23 +39,34 @@ async function fetchJSON(url: string, cookieHeader: string) {
     return res.json();
 }
 
+async function fetchMeServer(baseUrl: string, cookieHeader: string) {
+    const meUrl = new URL("/api/v1/auth/me", baseUrl);
+    return fetchJSON(meUrl.toString(), cookieHeader);
+}
+
 export default async function ReportesPage({
     searchParams,
 }: {
     searchParams?: Promise<{ from?: string; to?: string; granularity?: string }>;
 }) {
+    const baseUrl = process.env.BETTER_AUTH_URL ?? "http://localhost:3000";
+    const cookieHeader = await getCookieHeader();
 
     const session = await auth.api.getSession({
-        headers: (await headers()) as any,
+        headers: { cookie: cookieHeader } as any,
     });
 
     if (!session?.user?.id) {
         redirect("/login");
     }
 
-    const role = (session.user as any).role as "ADMIN" | "USER" | undefined;
+    const me = await fetchMeServer(baseUrl, cookieHeader);
 
-    if (role !== "ADMIN") {
+    if (!me) {
+        redirect("/login");
+    }
+
+    if (me.role !== "ADMIN") {
         redirect("/transacciones");
     }
 
@@ -68,9 +78,6 @@ export default async function ReportesPage({
     const from = isYMD(sp.from) ? sp.from : ymd(startOfYear);
     const to = isYMD(sp.to) ? sp.to : ymd(now);
     const granularity = normalizeGranularity(sp.granularity);
-
-    const baseUrl = process.env.BETTER_AUTH_URL ?? "http://localhost:3000";
-    const cookieHeader = await getCookieHeader();
 
     const chartUrl = new URL("/api/v1/reports/financial-movements-chart", baseUrl);
     chartUrl.searchParams.set("from", from);
