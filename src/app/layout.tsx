@@ -1,13 +1,23 @@
+/**
+ * @fileoverview Root layout component for the entire application.
+ * Configures metadata, loads Material Symbols icons, and wraps the app with providers.
+ */
+
 import "@/styles/globals.css";
 
 export const metadata = {
     title: "Prueba técnica Prevalentware",
-    description: "Prueba técnica desarrollada para desarrollador Fullstack",
+    description: "Technical test developed for Fullstack developer",
     icons: {
         icon: "/prevalentware_logo.png",
     },
 };
 
+/**
+ * Root layout component
+ * @param {Object} props
+ * @param {React.ReactNode} props.children - Page content
+ */
 export default function RootLayout({
     children,
 }: {

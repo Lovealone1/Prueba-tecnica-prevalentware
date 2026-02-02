@@ -1,3 +1,30 @@
+/**
+ * @component TransactionsTable
+ * @description Table component for displaying transaction list (income and expenses).
+ * Renders information with special formatting for COP currency and dates.
+ * Supports pagination and loading state with skeleton loaders.
+ * 
+ * @typedef {Object} TransactionRow
+ * @property {string} id - Unique transaction ID
+ * @property {string} concept - Movement description
+ * @property {number} amount - Amount in pesos
+ * @property {string} date - ISO format movement date
+ * @property {'gasto'|'ingreso'} type - Movement type
+ * @property {string} name - Name of responsible user
+ * 
+ * @param {Object} props
+ * @param {TransactionRow[]} props.rows - Transaction data
+ * @param {React.ReactNode} [props.headerRight] - Element to show in header right
+ * @param {boolean} [props.loading=false] - Whether loading
+ * @param {number} [props.pageSize=12] - Items per page
+ * 
+ * @example
+ * <TransactionsTable
+ *   rows={transactions}
+ *   loading={isLoading}
+ *   headerRight={<NewTransactionButton />}
+ * />
+ */
 "use client";
 
 import { useMemo } from "react";
@@ -12,10 +39,16 @@ export type TransactionRow = {
     name: string;
 };
 
+/**
+ * Format ISO date to dd/mm/yyyy HH:mm:ss format
+ */
 function formatDate(value: string) {
     return value.slice(0, 19).replace("T", " ");
 }
 
+/**
+ * Format number to COP currency
+ */
 function formatMoneyCop(value: number) {
     return new Intl.NumberFormat("es-CO", {
         style: "currency",
@@ -24,6 +57,9 @@ function formatMoneyCop(value: number) {
     }).format(value);
 }
 
+/**
+ * Skeleton line component for loading state
+ */
 function SkeletonLine({ w = "w-28" }: { w?: string }) {
     return <div className={`h-4 ${w} animate-pulse rounded bg-white/10`} />;
 }

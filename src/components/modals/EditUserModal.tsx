@@ -1,3 +1,25 @@
+/**
+ * @component EditUserModal
+ * @description Modal for editing user details (name and role).
+ * Admin-exclusive feature to manage user information and permissions.
+ * 
+ * @param {Object} props
+ * @param {boolean} props.open - Whether modal is open
+ * @param {Function} props.onClose - Callback when modal closes
+ * @param {boolean} [props.loading=false] - Whether submitting
+ * @param {Object} props.initial - Initial user data
+ * @param {string|null} props.initial.name - User name
+ * @param {'ADMIN'|'USER'} props.initial.role - User role
+ * @param {Function} props.onSubmit - Callback with form data
+ * 
+ * @example
+ * <EditUserModal
+ *   open={isOpen}
+ *   initial={user}
+ *   onClose={() => setIsOpen(false)}
+ *   onSubmit={(data) => updateUser(data)}
+ * />
+ */
 "use client";
 
 import { FormModal, type FormField } from "@/components/ui/FormModal";

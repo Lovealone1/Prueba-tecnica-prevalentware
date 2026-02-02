@@ -7,9 +7,7 @@ export default async function HomePage() {
         headers: (await headers()) as any,
     });
 
-    if (!session?.user?.id) {
-        redirect("/login");
-    }
+    if (!session?.user?.id) redirect("/login");
 
     redirect("/transacciones");
 }

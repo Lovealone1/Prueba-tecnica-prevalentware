@@ -1,3 +1,23 @@
+/**
+ * @component SetPhoneModal
+ * @description Modal for updating user phone number.
+ * Simple form with phone input field validation.
+ * 
+ * @param {Object} props
+ * @param {boolean} props.open - Whether modal is open
+ * @param {Function} props.onClose - Callback when modal closes
+ * @param {string|null} [props.initialPhone] - Current phone number
+ * @param {boolean} [props.loading=false] - Whether submitting
+ * @param {Function} props.onSubmit - Callback with form data
+ * 
+ * @example
+ * <SetPhoneModal
+ *   open={isOpen}
+ *   initialPhone={currentPhone}
+ *   onClose={() => setIsOpen(false)}
+ *   onSubmit={(data) => updatePhone(data)}
+ * />
+ */
 "use client";
 
 import { FormModal, type FormField } from "@/components/ui/FormModal";

@@ -1,3 +1,11 @@
+/**
+ * @component AlertsProvider
+ * @description Global provider for notifications and alerts throughout the application.
+ * Uses Sonner library to display toasts positioned in the top-right corner.
+ * 
+ * @example
+ * <AlertsProvider />
+ */
 "use client";
 
 import { Toaster } from "sonner";
@@ -5,6 +13,7 @@ import { Toaster } from "sonner";
 export function AlertsProvider() {
     return (
         <Toaster
+            theme="dark"
             position="top-right"
             richColors
             closeButton

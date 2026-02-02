@@ -1,3 +1,18 @@
+/**
+ * @component Sidebar
+ * @description Collapsible side navigation bar containing main application navigation.
+ * Filters menu items based on user role (ADMIN/USER) and highlights the active route.
+ * 
+ * @features
+ * - Responsive navigation with collapse/expand
+ * - Responsive logo icon
+ * - Menu item filtering by user role
+ * - Auto-highlighting of active route
+ * - Tooltips in collapsed mode
+ * 
+ * @example
+ * <Sidebar />
+ */
 "use client";
 
 import Image from "next/image";
@@ -17,6 +32,7 @@ export function Sidebar() {
 
     const widthClass = collapsed ? "w-16" : "w-72";
 
+    // Filter menu items based on user role
     const items = useMemo(() => {
         if (!me) return [];
         const sections = filterNavByRole(navSections, me.role);
