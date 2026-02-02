@@ -9,6 +9,7 @@
 "use client";
 
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
+import { MaterialIcon } from "@/components/ui/MaterialIcon";
 import { authClient } from "@/lib/auth-client";
 
 export function Header() {
@@ -28,9 +29,18 @@ export function Header() {
                 <button
                     type="button"
                     onClick={onLogout}
-                    className="inline-flex items-center gap-2 rounded-xl border border-zinc-800/70 bg-white/5 px-3 py-2 text-sm font-medium text-zinc-200 transition hover:bg-white/10 hover:text-white"
+                    className="
+                        inline-flex items-center gap-2
+                        rounded-xl
+                        border border-zinc-800/70 bg-white/5
+                        px-3 py-2
+                        text-sm font-medium text-zinc-200
+                        transition
+                        hover:bg-white/10 hover:text-white
+                    "
                 >
-                    Logout
+                    <MaterialIcon name="logout" set="rounded" size={18} />
+                    <span>Logout</span>
                 </button>
             </div>
         </header>
