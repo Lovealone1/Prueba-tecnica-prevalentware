@@ -1,3 +1,18 @@
+/**
+ * @component AppShell
+ * @description Root component that structures the main application layout.
+ * Provides sidebar, header, and main content container with authentication
+ * and alerts providers.
+ * 
+ * @param {Object} props
+ * @param {React.ReactNode} props.children - Main page content
+ * @param {Me} props.initialMe - Initial authenticated user data (from server)
+ * 
+ * @example
+ * <AppShell initialMe={userData}>
+ *   <Dashboard />
+ * </AppShell>
+ */
 "use client";
 
 import { Sidebar } from "@/components/layout/Sidebar";

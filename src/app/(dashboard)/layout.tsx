@@ -1,9 +1,19 @@
+/**
+ * @fileoverview Dashboard layout - protected route that wraps all authenticated pages.
+ * Retrieves user session and initializes AppShell with user data.
+ */
+
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { auth } from "@/server/auth/auth";
 import { AppShell } from "@/components/layout/AppShell";
 import type { Me } from "@/types/auth";
 
+/**
+ * Dashboard layout component - requires authentication
+ * @param {Object} props
+ * @param {React.ReactNode} props.children - Page content
+ */
 export default async function DashboardLayout({
     children,
 }: {

@@ -1,3 +1,33 @@
+/**
+ * @component UsersTable
+ * @description Table component for displaying user list with admin actions.
+ * Shows user information and provides buttons for editing user details and phone.
+ * Supports pagination and loading state with skeleton loaders.
+ * 
+ * @typedef {Object} UserRow
+ * @property {string} id - User ID
+ * @property {string|null} name - User name
+ * @property {string} email - User email
+ * @property {'ADMIN'|'USER'} role - User role
+ * @property {string|null} phone - User phone number
+ * @property {string} createdAt - Creation timestamp
+ * @property {string} updatedAt - Last update timestamp
+ * 
+ * @param {Object} props
+ * @param {UserRow[]} props.rows - User data
+ * @param {Function} [props.onEdit] - Callback when edit button clicked
+ * @param {Function} [props.onPhone] - Callback when phone button clicked
+ * @param {boolean} [props.loading=false] - Whether loading
+ * @param {number} [props.pageSize=10] - Items per page
+ * 
+ * @example
+ * <UsersTable
+ *   rows={users}
+ *   loading={isLoading}
+ *   onEdit={(user) => openEditModal(user)}
+ *   onPhone={(user) => openPhoneModal(user)}
+ * />
+ */
 "use client";
 
 import { useMemo } from "react";

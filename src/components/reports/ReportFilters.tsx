@@ -1,3 +1,20 @@
+/**
+ * @component ReportFilters
+ * @description Filter controls for financial reports with date range and granularity options.
+ * Allows users to select date range, granularity level (day/month/all) and download CSV.
+ * 
+ * @param {Object} props
+ * @param {string} props.from - Start date (YYYY-MM-DD)
+ * @param {string} props.to - End date (YYYY-MM-DD)
+ * @param {'day'|'month'|'all'} props.granularity - Data granularity level
+ * 
+ * @example
+ * <ReportFilters
+ *   from="2026-01-01"
+ *   to="2026-02-02"
+ *   granularity="month"
+ * />
+ */
 "use client";
 
 import { useMemo, useRef, useState, useTransition, useEffect } from "react";
@@ -7,6 +24,9 @@ import { alerts } from "@/lib/alerts";
 
 type Granularity = "day" | "month" | "all";
 
+/**
+ * Loading spinner component
+ */
 function Spinner() {
     return (
         <span

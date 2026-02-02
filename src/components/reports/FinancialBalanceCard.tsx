@@ -1,3 +1,6 @@
+/**
+ * Formats number to COP currency
+ */
 function formatMoneyCop(value: number) {
     return new Intl.NumberFormat("es-CO", {
         style: "currency",
@@ -6,10 +9,37 @@ function formatMoneyCop(value: number) {
     }).format(value);
 }
 
+/**
+ * Formats ISO date to dd/mm/yyyy HH:mm:ss format
+ */
 function formatDateTime(iso: string) {
     return iso.slice(0, 19).replace("T", " ");
 }
 
+/**
+ * @component FinancialBalanceCard
+ * @description Card component displaying financial summary with balance, income and expenses.
+ * Shows total balance with timestamp and breakdown of income vs expense totals.
+ * 
+ * @param {Object} props
+ * @param {Object} props.data - Financial data
+ * @param {number} props.data.balance - Current balance amount
+ * @param {string} props.data.currency - Currency code (e.g., 'COP')
+ * @param {string} props.data.asOf - ISO timestamp of data
+ * @param {Object} props.data.totals - Income and expense totals
+ * @param {number} props.data.totals.income - Total income
+ * @param {number} props.data.totals.expense - Total expenses
+ * 
+ * @example
+ * <FinancialBalanceCard
+ *   data={{
+ *     balance: 5000000,
+ *     currency: 'COP',
+ *     asOf: '2026-02-02T15:30:00',
+ *     totals: { income: 10000000, expense: 5000000 }
+ *   }}
+ * />
+ */
 export function FinancialBalanceCard({
     data,
 }: {

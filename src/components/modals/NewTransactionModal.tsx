@@ -1,3 +1,25 @@
+/**
+ * @component NewTransactionModal
+ * @description Modal for creating new transactions (income or expense).
+ * Provides dynamic fields based on user role - admins can assign transactions to other users.
+ * 
+ * @param {Object} props
+ * @param {boolean} props.open - Whether modal is open
+ * @param {Function} props.onClose - Callback when modal closes
+ * @param {boolean} [props.loading=false] - Whether submitting
+ * @param {'ADMIN'|'USER'} props.viewerRole - Current user role
+ * @param {Array<{id:string, name:string|null}>} [props.users=[]] - Available users list (for admins)
+ * @param {Function} props.onSubmit - Callback with form data
+ * 
+ * @example
+ * <NewTransactionModal
+ *   open={isOpen}
+ *   viewerRole="ADMIN"
+ *   users={usersList}
+ *   onClose={() => setIsOpen(false)}
+ *   onSubmit={(data) => createTransaction(data)}
+ * />
+ */
 "use client";
 
 import { FormModal, type FormField } from "@/components/ui/FormModal";
@@ -43,6 +65,7 @@ export function NewTransactionModal({
         },
     ];
 
+    // Admin-only field to assign transaction to another user
     const adminField: FormField[] =
         viewerRole === "ADMIN"
             ? [

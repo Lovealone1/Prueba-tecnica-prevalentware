@@ -1,3 +1,11 @@
+/**
+ * @component Header
+ * @description Sticky header with breadcrumb navigation and logout button.
+ * Positioned at the top and remains visible while scrolling.
+ * 
+ * @example
+ * <Header />
+ */
 "use client";
 
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";

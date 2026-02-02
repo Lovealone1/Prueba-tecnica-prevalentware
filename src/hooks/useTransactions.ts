@@ -1,3 +1,22 @@
+/**
+ * @hook useTransactions
+ * @description Custom hook for fetching and managing transaction list.
+ * Handles loading, error, and pagination states automatically.
+ * 
+ * @param {Object} [params] - Optional parameters
+ * @param {string} [params.userId] - Filter transactions by user ID (admin only)
+ * 
+ * @returns {Object} Transaction state
+ * @returns {boolean} returns.loading - Whether transactions are loading
+ * @returns {string|null} returns.error - Error message if any
+ * @returns {TransactionRow[]} returns.rows - Transaction data
+ * 
+ * @example
+ * const { loading, error, rows } = useTransactions();
+ * 
+ * // With user filter
+ * const adminTransactions = useTransactions({ userId: "user-123" });
+ */
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
@@ -37,7 +56,7 @@ export function useTransactions(params?: { userId?: string }) {
 
                 if (!res.ok) {
                     const body = await res.json().catch(() => null);
-                    const msg = body?.message ?? "No se pudo cargar el listado";
+                    const msg = body?.message ?? "Could not load transaction list";
                     throw new Error(msg);
                 }
 

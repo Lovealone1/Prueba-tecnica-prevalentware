@@ -157,9 +157,9 @@ describe("API /api/v1/transactions", () => {
                 amount: 120000, 
                 date: new Date("2026-01-31T10:00:00Z"),
                 type: "INCOME",
-                userId: "u1",
                 createdAt: new Date("2026-01-31T10:01:00Z"),
                 updatedAt: new Date("2026-01-31T10:01:00Z"),
+                user: { name: "John Doe" },
             },
         ]);
 
@@ -183,7 +183,7 @@ describe("API /api/v1/transactions", () => {
         // Validate response format and data integrity
         expect(res.statusCode).toBe(200);
         expect(Array.isArray(res.body)).toBe(true);
-        expect(res.body[0].userId).toBe("u1");
+        expect(res.body[0].name).toBe("John Doe");
         // Ensure numeric types are preserved (avoiding Decimal serialization issues)
         expect(typeof res.body[0].amount).toBe("number");
         // Ensure dates are serialized as ISO strings for JSON compatibility
@@ -279,9 +279,9 @@ describe("API /api/v1/transactions", () => {
             amount: 120000,
             date: new Date("2026-01-31T11:00:00Z"),
             type: "INCOME",
-            userId: "u1",
             createdAt: new Date("2026-01-31T11:00:01Z"),
             updatedAt: new Date("2026-01-31T11:00:01Z"),
+            user: { name: "John Doe" },
         });
 
         const req = createReq({
@@ -311,7 +311,7 @@ describe("API /api/v1/transactions", () => {
         );
 
         expect(res.statusCode).toBe(201);
-        expect(res.body.userId).toBe("u1");
+        expect(res.body.name).toBe("John Doe");
         // Type coercion validation for API response
         expect(typeof res.body.amount).toBe("number");
     });

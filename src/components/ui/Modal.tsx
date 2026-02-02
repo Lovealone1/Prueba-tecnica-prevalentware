@@ -1,3 +1,35 @@
+/**
+ * @component Modal
+ * @description Generic and flexible base modal component for displaying content in a popup window.
+ * Supports header, body, footer and closes with ESC key or backdrop click.
+ * 
+ * @features
+ * - Close with ESC key
+ * - Close on backdrop click
+ * - Prevents body scroll when open
+ * - Portal rendering to avoid z-index issues
+ * - Visual effects with blur and glow
+ * 
+ * @param {Object} props
+ * @param {boolean} props.open - Control whether modal is open
+ * @param {string} props.title - Modal title
+ * @param {string} [props.description] - Description under title
+ * @param {React.ReactNode} props.children - Modal body content
+ * @param {React.ReactNode} [props.footer] - Modal footer content (buttons, etc)
+ * @param {string} [props.widthClassName='max-w-lg'] - Tailwind width class
+ * @param {Function} props.onClose - Callback when modal closes
+ * 
+ * @example
+ * <Modal
+ *   open={isOpen}
+ *   title="Confirmation"
+ *   description="Are you sure?"
+ *   onClose={() => setIsOpen(false)}
+ *   footer={<button onClick={handleConfirm}>Confirm</button>}
+ * >
+ *   <p>Content here</p>
+ * </Modal>
+ */
 "use client";
 
 import { useEffect } from "react";
@@ -25,6 +57,7 @@ export function Modal({
     onClose: () => void;
     widthClassName?: string;
 }) {
+    // Close modal when ESC is pressed
     useEffect(() => {
         if (!open) return;
 
@@ -36,6 +69,7 @@ export function Modal({
         return () => document.removeEventListener("keydown", onKey);
     }, [open, onClose]);
 
+    // Prevent body scroll when modal is open
     useEffect(() => {
         if (!open) return;
         const prev = document.body.style.overflow;
