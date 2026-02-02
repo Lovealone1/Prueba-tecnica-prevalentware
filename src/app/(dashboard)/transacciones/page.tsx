@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { TransactionsTable, type TransactionRow } from "@/components/tables/TransactionsTable";
 import { TransactionsToolbar } from "@/components/transactions/TransactionToolbar";
+import { PermissionAlert } from "@/components/ui/PermissionAlert";
 
 type Me = { id: string; role: "ADMIN" | "USER"; name?: string | null };
 
@@ -47,21 +48,27 @@ export default async function TransactionsPage() {
 
     if (!me) {
         return (
-            <TransactionsTable
-                rows={rows}
-                pageSize={12}
-                headerRight={<TransactionsToolbar viewer={{ id: "", role: "USER", name: null }} users={[]} />}
-            />
+            <>
+                <PermissionAlert />
+                <TransactionsTable
+                    rows={rows}
+                    pageSize={12}
+                    headerRight={<TransactionsToolbar viewer={{ id: "", role: "USER", name: null }} users={[]} />}
+                />
+            </>
         );
     }
 
     const users = me.role === "ADMIN" ? await getUsersForAdmin(cookieHeader) : [];
 
     return (
-        <TransactionsTable
-            rows={rows}
-            pageSize={12}
-            headerRight={<TransactionsToolbar viewer={me} users={users} />}
-        />
+        <>
+            <PermissionAlert />
+            <TransactionsTable
+                rows={rows}
+                pageSize={12}
+                headerRight={<TransactionsToolbar viewer={me} users={users} />}
+            />
+        </>
     );
 }

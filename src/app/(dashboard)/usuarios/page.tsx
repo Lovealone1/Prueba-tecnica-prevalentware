@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { UsersAdminClient } from "@/components/users/UsersAdminClient";
+import { PermissionAlert } from "@/components/ui/PermissionAlert";
 import type { UserRow } from "@/components/tables/UsersTable";
 
 type Me = { id: string; role: "ADMIN" | "USER" };
@@ -39,9 +40,14 @@ export default async function UsuariosPage() {
     const me = await getMe(cookieHeader);
 
     if (!me) redirect("/login"); 
-    if (me.role !== "ADMIN") redirect("/transacciones");
+    if (me.role !== "ADMIN") redirect("/transacciones?alert=permission_denied");
 
     const users = await getUsers(cookieHeader);
 
-    return <UsersAdminClient rows={users} />;
+    return (
+        <>
+            <PermissionAlert />
+            <UsersAdminClient rows={users} />
+        </>
+    );
 }

@@ -5,6 +5,7 @@ import { auth } from "@/server/auth/auth";
 import { ReportFilters } from "@/components/reports/ReportFilters";
 import { FinancialBalanceCard } from "@/components/reports/FinancialBalanceCard";
 import { FinancialMovementsChart } from "@/components/reports/FinancialMovementChart";
+import { PermissionAlert } from "@/components/ui/PermissionAlert";
 
 function ymd(d: Date) {
     return d.toISOString().slice(0, 10);
@@ -67,7 +68,7 @@ export default async function ReportesPage({
     }
 
     if (me.role !== "ADMIN") {
-        redirect("/transacciones");
+        redirect("/transacciones?alert=permission_denied");
     }
 
     const sp = (await searchParams) ?? {};
@@ -94,14 +95,17 @@ export default async function ReportesPage({
     ]);
 
     if (!chartData || !balanceData) {
-        redirect("/transacciones");
+        redirect("/transacciones?alert=permission_denied");
     }
 
     return (
-        <div className="px-6 py-6 space-y-4">
-            <ReportFilters from={from} to={to} granularity={granularity} />
-            <FinancialBalanceCard data={balanceData} />
-            <FinancialMovementsChart data={chartData} />
-        </div>
+        <>
+            <PermissionAlert />
+            <div className="px-6 py-6 space-y-4">
+                <ReportFilters from={from} to={to} granularity={granularity} />
+                <FinancialBalanceCard data={balanceData} />
+                <FinancialMovementsChart data={chartData} />
+            </div>
+        </>
     );
 }
