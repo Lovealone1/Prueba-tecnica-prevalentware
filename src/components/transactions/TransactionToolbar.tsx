@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { MaterialIcon } from "@/components/ui/MaterialIcon";
 import { NewTransactionModal } from "@/components/modals/NewTransactionModal";
+import { alerts } from "@/lib/alerts";
 
 type Viewer = { id: string; role: "ADMIN" | "USER"; name?: string | null };
 
@@ -57,9 +58,16 @@ export function TransactionsToolbar({
             }
 
             setOpen(false);
+            alerts.success("Transacción creada", {
+                description: "El movimiento se registró correctamente.",
+            });
             router.refresh(); 
         } catch (e: any) {
-            setErr(e?.message ?? "Error");
+            const message = e?.message ?? "Error";
+            setErr(message);
+            alerts.error("Error al crear transacción", {
+                description: message,
+            });
         } finally {
             setLoading(false);
         }

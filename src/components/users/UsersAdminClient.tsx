@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { UsersTable, type UserRow } from "@/components/tables/UsersTable";
 import { EditUserModal } from "@/components/modals/EditUserModal";
 import { SetPhoneModal } from "@/components/modals/SetPhoneModal";
+import { alerts } from "@/lib/alerts";
 
 export function UsersAdminClient({ rows }: { rows: UserRow[] }) {
     const router = useRouter();
@@ -89,7 +90,15 @@ export function UsersAdminClient({ rows }: { rows: UserRow[] }) {
                     try {
                         await patchUser(selected.id, body);
                         setEditOpen(false);
+                        alerts.success("Usuario actualizado", {
+                            description: "Los datos del usuario se guardaron correctamente.",
+                        });
                         router.refresh();
+                    } catch (e: any) {
+                        const message = e?.message ?? "Error";
+                        alerts.error("Error al actualizar usuario", {
+                            description: message,
+                        });
                     } finally {
                         setLoading(false);
                     }
@@ -111,7 +120,15 @@ export function UsersAdminClient({ rows }: { rows: UserRow[] }) {
                     try {
                         await patchPhone(selected.id, valueToSend);
                         setPhoneOpen(false);
+                        alerts.success("Teléfono actualizado", {
+                            description: "El número de contacto se guardó correctamente.",
+                        });
                         router.refresh();
+                    } catch (e: any) {
+                        const message = e?.message ?? "Error";
+                        alerts.error("Error al actualizar teléfono", {
+                            description: message,
+                        });
                     } finally {
                         setLoading(false);
                     }
