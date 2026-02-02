@@ -1,14 +1,28 @@
 /**
- * Builds a UTC date range with exclusive upper bound.
+ * Validates that from date is not after to date.
  * 
- * This function assumes the "to" date is already at midnight UTC,
- * representing the exclusive upper bound of the range.
+ * @param from - Start date
+ * @param to - End date
+ * @throws Error if from > to
+ */
+export function validateDateRange(from: Date, to: Date): void {
+    if (from.getTime() > to.getTime()) {
+        throw new Error("Invalid date range: 'from' date must be before or equal to 'to' date");
+    }
+}
+
+/**
+ * Builds a UTC date range with inclusive upper bound.
  * 
- * Range semantics: [from, toExclusive)
+ * This function assumes the "to" date is already at midnight UTC.
+ * The upper bound is made inclusive by adding one day and keeping it exclusive,
+ * or by using <= in the database query.
+ * 
+ * Range semantics: [from, toInclusive]
  * 
  * @param input - Object with ISO 8601 date strings
- * @returns Date range with exclusive upper bound
- * @throws Error if either date string is invalid
+ * @returns Date range with inclusive upper bound
+ * @throws Error if either date string is invalid or if from > to
  */
 export function buildUtcRangeExclusive(input: { fromIso: string; toIso: string }) {
     const from = new Date(input.fromIso);
@@ -18,7 +32,13 @@ export function buildUtcRangeExclusive(input: { fromIso: string; toIso: string }
         throw new Error("Invalid range");
     }
 
-    // The "to" date is expected to be at midnight UTC, making it exclusive.
-    // This prevents off-by-one errors in date range queries.
-    return { from, toExclusive: to };
+    // Validate that from <= to
+    validateDateRange(from, to);
+
+    // Add one day to make the range inclusive: [from, to + 1day)
+    // This way the entire last day is included
+    const toInclusive = new Date(to);
+    toInclusive.setUTCDate(toInclusive.getUTCDate() + 1);
+
+    return { from, toExclusive: toInclusive };
 }

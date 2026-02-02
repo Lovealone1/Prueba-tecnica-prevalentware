@@ -5,6 +5,10 @@ import { jsonError } from "@/server/http/json-error";
 import { requireAuthOr401 } from "@/server/auth/require-auth";
 import { ERROR_MESSAGES } from "@/server/http/errors";
 
+function translateType(type: "EXPENSE" | "INCOME") {
+    return type === "EXPENSE" ? "gasto" : "ingreso";
+}
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     const authUser = await requireAuthOr401(req, res);
     if (!authUser) return;
@@ -34,17 +38,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     amount: true,
                     date: true,
                     type: true,
-                    userId: true,
                     createdAt: true,
                     updatedAt: true,
+                    user: { select: { name: true } }, // <- join para traer name
                 },
             });
 
             return res.status(200).json(
                 list.map((t) => ({
-                    ...t,
+                    id: t.id,
+                    concept: t.concept,
                     amount: Number(t.amount),
                     date: t.date.toISOString(),
+                    type: translateType(t.type),
+                    name: t.user?.name ?? "", // <- en vez de userId
                     createdAt: t.createdAt.toISOString(),
                     updatedAt: t.updatedAt.toISOString(),
                 }))
@@ -66,9 +73,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             typeof req.query.userId === "string" ? req.query.userId : undefined;
 
         const bodyUserId =
-            typeof (req.body as any)?.userId === "string" ? (req.body as any).userId : undefined;
+            typeof (req.body as any)?.userId === "string"
+                ? (req.body as any).userId
+                : undefined;
 
-        // USER: if they try to force another userId via query or body => 403
         if (
             authUser.role === "USER" &&
             (queryUserId || bodyUserId) &&
@@ -78,7 +86,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }
 
         const userIdToUse =
-            authUser.role === "ADMIN" ? queryUserId ?? authUser.id : authUser.id;
+            authUser.role === "ADMIN" ? (queryUserId ?? authUser.id) : authUser.id;
 
         try {
             const created = await prisma.transaction.create({
@@ -95,16 +103,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     amount: true,
                     date: true,
                     type: true,
-                    userId: true,
                     createdAt: true,
                     updatedAt: true,
+                    user: { select: { name: true } }, // <- para devolver name
                 },
             });
 
             return res.status(201).json({
-                ...created,
+                id: created.id,
+                concept: created.concept,
                 amount: Number(created.amount),
                 date: created.date.toISOString(),
+                type: translateType(created.type),
+                name: created.user?.name ?? "",
                 createdAt: created.createdAt.toISOString(),
                 updatedAt: created.updatedAt.toISOString(),
             });

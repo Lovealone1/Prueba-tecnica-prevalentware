@@ -23,11 +23,28 @@ export function toIsoOrUndefined(value: unknown): string | undefined {
 }
 
 /**
+ * Validates that from date is not after to date.
+ * 
+ * @param fromIso - ISO string for start date
+ * @param toIso - ISO string for end date
+ * @throws Error if from > to
+ */
+export function validateIsoRange(fromIso: string, toIso: string): void {
+    const from = new Date(fromIso);
+    const to = new Date(toIso);
+    if (from.getTime() > to.getTime()) {
+        throw new Error("Invalid date range: 'from' date must be before or equal to 'to' date");
+    }
+}
+
+/**
  * Ensures both from and to dates exist and are valid ISO strings.
  * Returns an object ready to pass to report builders.
+ * Validates that from <= to.
  * 
  * @param input - Object with from and to date values (any type)
  * @returns Validated ISO range object or null if either date is invalid
+ * @throws Error if from > to
  */
 export function requireIsoRange(input: {
     from: unknown;
@@ -37,5 +54,9 @@ export function requireIsoRange(input: {
     const toIso = toIsoOrUndefined(input.to);
 
     if (!fromIso || !toIso) return null;
+    
+    // Validate date range
+    validateIsoRange(fromIso, toIso);
+    
     return { fromIso, toIso };
 }

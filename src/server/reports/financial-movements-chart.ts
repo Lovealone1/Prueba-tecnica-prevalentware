@@ -114,13 +114,15 @@ export type FinancialMovementsChartResponse = {
  * Builds a comprehensive financial movements chart with aggregated transaction data.
  * 
  * Process flow:
- * 1. Fetch transactions within date range from database
- * 2. Aggregate transactions into time-based buckets
- * 3. Calculate net values (income - expense) for each bucket
- * 4. Format data for multiple visualization options
+ * 1. Validate date range (from <= to)
+ * 2. Fetch transactions within date range from database
+ * 3. Aggregate transactions into time-based buckets
+ * 4. Calculate net values (income - expense) for each bucket
+ * 5. Format data for multiple visualization options
  * 
  * @param params - Chart parameters (date range and granularity)
  * @returns Structured chart data with labels, series, and metadata
+ * @throws Error if from > to
  */
 export async function buildFinancialMovementsChart(params: {
     from: string;
@@ -128,6 +130,13 @@ export async function buildFinancialMovementsChart(params: {
     granularity: Granularity;
 }): Promise<FinancialMovementsChartResponse> {
     const { from, to, granularity } = params;
+
+    // Validate date range
+    const fromDate = new Date(from);
+    const toDate = new Date(to);
+    if (fromDate.getTime() > toDate.getTime()) {
+        throw new Error("Invalid date range: 'from' date must be before or equal to 'to' date");
+    }
 
     // Fetch transactions within the specified date range
     const rows = await fetchFinancialTransactions({
