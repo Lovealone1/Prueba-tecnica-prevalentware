@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
-import { TransactionsTable, type TransactionRow } from "@/components/tables/TransactionsTable";
-import { TransactionsToolbar } from "@/components/transactions/TransactionToolbar";
 import { PermissionAlert } from "@/components/ui/PermissionAlert";
+import type { TransactionRow } from "@/components/tables/TransactionsTable";
+import { TransactionsDeleteWrapper } from "@/components/transactions/TransactionsDeleteWrapper";
 
 type Me = { id: string; role: "ADMIN" | "USER"; name?: string | null };
 
@@ -12,7 +12,7 @@ async function getCookieHeader() {
 
 async function getTransactions(cookieHeader: string): Promise<TransactionRow[]> {
     const baseUrl = process.env.BETTER_AUTH_URL ?? "http://localhost:3000";
-    const res = await fetch(`${baseUrl}/api/v1/transactions`, { 
+    const res = await fetch(`${baseUrl}/api/v1/transactions`, {
         headers: { cookie: cookieHeader },
         cache: "no-store",
     });
@@ -30,7 +30,9 @@ async function getMe(cookieHeader: string): Promise<Me | null> {
     return res.json();
 }
 
-async function getUsersForAdmin(cookieHeader: string): Promise<Array<{ id: string; name: string | null }>> {
+async function getUsersForAdmin(
+    cookieHeader: string
+): Promise<Array<{ id: string; name: string | null }>> {
     const baseUrl = process.env.BETTER_AUTH_URL ?? "http://localhost:3000";
     const res = await fetch(`${baseUrl}/api/v1/users`, {
         headers: { cookie: cookieHeader },
@@ -44,31 +46,18 @@ async function getUsersForAdmin(cookieHeader: string): Promise<Array<{ id: strin
 export default async function TransactionsPage() {
     const cookieHeader = await getCookieHeader();
 
-    const [me, rows] = await Promise.all([getMe(cookieHeader), getTransactions(cookieHeader)]);
+    const [me, initialRows] = await Promise.all([
+        getMe(cookieHeader),
+        getTransactions(cookieHeader),
+    ]);
 
-    if (!me) {
-        return (
-            <>
-                <PermissionAlert />
-                <TransactionsTable
-                    rows={rows}
-                    pageSize={12}
-                    headerRight={<TransactionsToolbar viewer={{ id: "", role: "USER", name: null }} users={[]} />}
-                />
-            </>
-        );
-    }
-
-    const users = me.role === "ADMIN" ? await getUsersForAdmin(cookieHeader) : [];
+    const viewer: Me = me ?? { id: "", role: "USER", name: null };
+    const users = me?.role === "ADMIN" ? await getUsersForAdmin(cookieHeader) : [];
 
     return (
         <>
             <PermissionAlert />
-            <TransactionsTable
-                rows={rows}
-                pageSize={12}
-                headerRight={<TransactionsToolbar viewer={me} users={users} />}
-            />
+            <TransactionsDeleteWrapper viewer={viewer} users={users} initialRows={initialRows} />
         </>
     );
 }
